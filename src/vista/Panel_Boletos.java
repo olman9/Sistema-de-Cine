@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package vista;
 
 import Modelo.conexion;
@@ -12,84 +8,69 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author jr245
- */
+import Modelo.Boleto;
+import Modelo.BoletoDAO;
+import java.util.List;
+import javax.swing.JOptionPane;
+
 public class Panel_Boletos extends javax.swing.JPanel {
- DefaultTableModel modelo;
-    /**
-     * Creates new form Panel_Boletos
-     */
-    public Panel_Boletos() {
+   
+    private DefaultTableModel modelo;
+     private BoletoDAO dao;
+    
+    
+    
+  public Panel_Boletos() {
         initComponents();
-        
-        modelo = (DefaultTableModel) boletos.getModel();
+        dao = new BoletoDAO();
+
+        modelo = new DefaultTableModel(
+            new String[]{"ID Boleto", "Asiento", "Compra ID", "Promoción ID", "Precio Final"},
+            0
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int col) {
+                return false;
+            }
+        };
+        boletos.setModel(modelo);
+
+        cargarBoletos();
+
+        boletos.getSelectionModel().addListSelectionListener(e -> {
+            int fila = boletos.getSelectedRow();
+            if (fila != -1) {
+                txtAsiento.setText(modelo.getValueAt(fila, 1).toString());
+                txtCompra.setText(modelo.getValueAt(fila, 2).toString());
+                txtPromocion.setText(modelo.getValueAt(fila, 3).toString());
+                txtPrecioFinal.setText(modelo.getValueAt(fila, 4).toString());
+            }
+        });
+}
+
+    public void cargarBoletos() {
+        List<Boleto> lista = dao.listar();
         modelo.setRowCount(0);
-        
-       mostrarBoletos();
-    }
-    
-    private void mostrarBoletos() {
-    conexion dbc = new conexion(); // creamos la conexion
-    Connection con = dbc.conectar(); // abrimos la conexion
-    
-    Statement st = null;
-    ResultSet rs = null;
-    
-    try {
-        st = con.createStatement(); // preparamos la consulta
-        // consulta con JOIN para mostrar nombres en vez de IDs
-        String consulta = "SELECT b.boleto_id, b.compra_id, p.titulo AS pelicula, s.nombre AS sala, " +
-                         "f.fecha_hora, b.asiento, b.precio_final, pr.descripcion AS promocion " +
-                         "FROM boletos b " +
-                         "LEFT JOIN funciones f ON b.funcion_id = f.funcion_id " +
-                         "LEFT JOIN peliculas p ON f.pelicula_id = p.pelicula_id " +
-                         "LEFT JOIN salas s ON f.sala_id = s.sala_id " +
-                         "LEFT JOIN promociones pr ON b.promocion_id = pr.promocion_id";
-        
-        rs = st.executeQuery(consulta); // ejecutamos la consulta para obtener todos los boletos con detalles
-        
-        // vamos leyendo cada registro que nos devuelve la consulta
-        while (rs.next()) {
-            // tomamos todos los datos de la fila y los agregamos en el arreglo fila
+        for (Boleto b : lista) {
             Object[] fila = {
-                rs.getInt("boleto_id"),           // el ID del boleto (auto_increment)
-                rs.getInt("compra_id"),           // el ID de la compra
-                rs.getString("pelicula"),         // el nombre de la pelicula en vez del ID
-                rs.getString("sala"),             // el nombre de la sala en vez del ID
-                rs.getTimestamp("fecha_hora"),    // la fecha y hora de la funcion (datetime)
-                rs.getString("asiento"),          // el asiento del boleto
-                rs.getBigDecimal("precio_final"), // el precio final del boleto (decimal)
-                rs.getString("promocion")         // la descripcion de la promocion (puede ser null)
-            };
-            // añadimos esa fila a la tabla 
+                b.getBoleto_id(),
+                b.getAsientos(),
+                b.getCompra_id(),
+                b.getPromocion_id(),
+                b.getPrecio_final(),
+                
+
+};
             modelo.addRow(fila);
         }
-        
-    } catch (SQLException ex) {
-        // si algo sale mal con la conexion muestra este mensaje en la consola
-        System.out.println("Error al cargar boletos: " + ex.getMessage());
-    } finally {
-        // cerramos todo para liberar memoria y evitar problemas
-        try {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-            if (con != null) con.close();
-        } catch (SQLException ex) {
-            System.out.println("Error cerrando recursos: " + ex.getMessage());
-        }
     }
-}
-    
-    
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
+    private void limpiarCampos() {
+        txtAsiento.setText("");
+        txtCompra.setText("");
+        txtPromocion.setText("");
+        txtPrecioFinal.setText("");
+  }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -97,12 +78,20 @@ public class Panel_Boletos extends javax.swing.JPanel {
         boletos = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        btnAgregar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
+        btnActualizar = new javax.swing.JButton();
+        txtAsiento = new javax.swing.JTextField();
+        txtCompra = new javax.swing.JTextField();
+        txtPromocion = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        txtPrecioFinal = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        txtFuncionId = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(0, 0, 0));
 
@@ -123,16 +112,26 @@ public class Panel_Boletos extends javax.swing.JPanel {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jButton1.setText("Agregar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnAgregar.setText("Agregar");
+        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnAgregarActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Eliminar");
+        btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
 
-        jButton3.setText("Actualizar");
+        btnActualizar.setText("Actualizar");
+        btnActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualizarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -141,50 +140,108 @@ public class Panel_Boletos extends javax.swing.JPanel {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(38, 38, 38)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton3)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1))
+                    .addComponent(btnActualizar)
+                    .addComponent(btnEliminar)
+                    .addComponent(btnAgregar))
                 .addContainerGap(40, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1)
+                .addComponent(btnAgregar)
                 .addGap(18, 18, 18)
-                .addComponent(jButton2)
+                .addComponent(btnEliminar)
                 .addGap(18, 18, 18)
-                .addComponent(jButton3)
+                .addComponent(btnActualizar)
                 .addContainerGap(64, Short.MAX_VALUE))
         );
+
+        jLabel1.setText("jLabel1");
+
+        jLabel2.setText("Asiento");
+
+        jLabel3.setText("Compra");
+
+        jLabel4.setText("Promocion");
+
+        jLabel6.setText("Precio final");
+
+        jLabel5.setText("Funcion");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(118, 118, 118)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField1)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
-                    .addComponent(jTextField3))
+                .addGap(15, 15, 15)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtCompra, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtPromocion, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(37, 37, 37)
+                        .addComponent(txtAsiento, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(9, 9, 9)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addComponent(jLabel5)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtPrecioFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtFuncionId, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addContainerGap(285, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(271, Short.MAX_VALUE)))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(22, 22, 22)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtAsiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtCompra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel5))
+                                .addGap(28, 28, 28))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(txtFuncionId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(39, 39, 39)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtPromocion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtPrecioFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel6))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addContainerGap(84, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(101, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -212,21 +269,109 @@ public class Panel_Boletos extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+       try {
+                String asiento = txtAsiento.getText();
+                int compra = Integer.parseInt(txtCompra.getText());
+                int promocion = Integer.parseInt(txtPromocion.getText());
+                double precioFinal = Double.parseDouble(txtPrecioFinal.getText());
+            int funcionId = Integer.parseInt(txtFuncionId.getText().trim());
 
+
+                Boleto b = new Boleto();
+                b.setAsientos(asiento);
+                b.setCompra_id(compra);
+                b.setPromocion_id(promocion);
+                b.setPrecio_final(precioFinal);
+                b.setFuncion_id(funcionId);
+
+                if (dao.agregar(b)) {
+                    JOptionPane.showMessageDialog(this, "Boleto agregado");
+                    cargarBoletos();
+                    limpiarCampos();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al agregar boleto");
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Datos inválidos");
+            }
+        }
+{
+    }//GEN-LAST:event_btnAgregarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+       int fila = boletos.getSelectedRow();
+            if (fila != -1) {
+                int id = (int) modelo.getValueAt(fila, 0);
+                if (dao.eliminar(id)) {
+                    JOptionPane.showMessageDialog(this, "Boleto eliminado");
+                    cargarBoletos();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al eliminar boleto");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecciona un boleto");
+            }
+
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+   int fila = boletos.getSelectedRow();
+            if (fila != -1) {
+                try {
+                    int id = (int) modelo.getValueAt(fila, 0);
+                    String asiento = txtAsiento.getText();
+                    int compra = Integer.parseInt(txtCompra.getText());
+                    int promocion = Integer.parseInt(txtPromocion.getText());
+                    double precioFinal = Double.parseDouble(txtPrecioFinal.getText());
+                    int funcionId = Integer.parseInt(txtFuncionId.getText().trim());
+                    
+                    
+                    Boleto b = new Boleto();
+                    b.setBoleto_id(id);
+                    b.setAsientos(asiento);
+                    b.setCompra_id(compra);
+                    b.setPromocion_id(promocion);
+                    b.setPrecio_final(precioFinal);
+                    b.setFuncion_id(funcionId); 
+
+                    if (dao.editar(b)) {
+                        JOptionPane.showMessageDialog(this, "Boleto actualizado");
+                        cargarBoletos();
+                        limpiarCampos();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al actualizar boleto");
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Datos inválidos");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecciona un boleto");
+            }
+}
+
+
+    {
+    }//GEN-LAST:event_btnActualizarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable boletos;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton btnActualizar;
+    private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField txtAsiento;
+    private javax.swing.JTextField txtCompra;
+    private javax.swing.JTextField txtFuncionId;
+    private javax.swing.JTextField txtPrecioFinal;
+    private javax.swing.JTextField txtPromocion;
     // End of variables declaration//GEN-END:variables
 }

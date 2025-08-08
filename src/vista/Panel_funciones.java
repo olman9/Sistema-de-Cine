@@ -1,30 +1,55 @@
 package vista;
 import Modelo.Funcion;
 import Modelo.FuncionDAO;
+import Modelo.Pelicula;
+import Modelo.PeliculaDAO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import static jdk.vm.ci.riscv64.RISCV64.CPUFeature.F;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 
 
 
 public class Panel_funciones extends JPanel {
-    private JComboBox<String> Sala;
-    private JButton btnActulizar;
-    private JButton btnAgregar;
-    private JButton btnEditar;
-    private JButton btnEliminar;
-    private JTextField campoFechaHora;
-    private JTextField campoPelicula;
-    private JTextField campoPrecioBase;
-    private JTable funciones;
-    private JScrollPane jScrollPane1;
+
   private DefaultTableModel modelo;
 
  private FuncionDAO dao = new FuncionDAO();
 
+public Panel_funciones() {
+    initComponents();
+    actualizarTabla();  // carga los datos en la tabla al iniciar
+   cargarSalas();
+   cargarPeliculas();
 
+   funciones.getSelectionModel().addListSelectionListener(e -> {
+        int fila = funciones.getSelectedRow();
+        if (fila != -1) {
+            String tituloPelicula = (String) modelo.getValueAt(fila, 1);
+            for (int i = 0; i < comboPeliculas.getItemCount(); i++) {
+                String item = comboPeliculas.getItemAt(i);
+                if (item.contains(tituloPelicula)) {
+                    comboPeliculas.setSelectedIndex(i);
+                    break;
+                }
+            }
+            String salaTexto = (String) modelo.getValueAt(fila, 3);
+            for (int i = 0; i < Sala.getItemCount(); i++) {
+                if (Sala.getItemAt(i).contains(salaTexto)) {
+                    Sala.setSelectedIndex(i);
+                    break;
+                }
+            }
+            campoFechaHora.setText((String) modelo.getValueAt(fila, 4));
+            campoPrecioBase.setText(String.valueOf(modelo.getValueAt(fila, 5)));
+        }
+    });
+}
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -33,23 +58,26 @@ public class Panel_funciones extends JPanel {
         btnAgregar = new javax.swing.JButton();
         btnEditar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
-        campoPelicula = new javax.swing.JTextField();
         campoPrecioBase = new javax.swing.JTextField();
         Sala = new javax.swing.JComboBox<>();
         campoFechaHora = new javax.swing.JTextField();
         btnActulizar = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        comboPeliculas = new javax.swing.JComboBox<>();
 
         setBackground(new java.awt.Color(0, 0, 0));
 
         funciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "ID Funcion", "ID Pelicula", "Sala", "Fecha- Hora", "Precio Base"
+                "ID Funcion", "Titulo", "ID Pelicula", "Sala", "Fecha- Hora", "Precio Base"
             }
         ));
         jScrollPane1.setViewportView(funciones);
@@ -75,9 +103,6 @@ public class Panel_funciones extends JPanel {
             }
         });
 
-        campoPelicula.setText("Peliculas");
-
-        campoPrecioBase.setText("Precio");
         campoPrecioBase.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 campoPrecioBaseActionPerformed(evt);
@@ -94,8 +119,6 @@ public class Panel_funciones extends JPanel {
             }
         });
 
-        campoFechaHora.setText("Fecha");
-
         btnActulizar.setText("Actualizar");
         btnActulizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -103,40 +126,58 @@ public class Panel_funciones extends JPanel {
             }
         });
 
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Id pelicula");
+
+        jLabel2.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Fecha y hora");
+
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("Precio base");
+
+        comboPeliculas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(39, 39, 39)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 555, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(46, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(campoPelicula, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
+                                .addGap(18, 18, 18)
+                                .addComponent(comboPeliculas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(93, 93, 93)
+                                .addComponent(Sala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(campoFechaHora, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(campoPrecioBase, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(50, 50, 50)
-                        .addComponent(Sala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(campoPrecioBase, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(campoFechaHora, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(btnAgregar)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addGap(3, 3, 3)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(btnAgregar)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                    .addGap(3, 3, 3)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(btnEditar, javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(btnEliminar, javax.swing.GroupLayout.Alignment.TRAILING))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(3, 3, 3)
-                                .addComponent(btnActulizar)))
-                        .addGap(82, 82, 82))
+                                .addComponent(btnEditar, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(btnEliminar, javax.swing.GroupLayout.Alignment.TRAILING))))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 555, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(46, Short.MAX_VALUE))))
+                        .addGap(3, 3, 3)
+                        .addComponent(btnActulizar)))
+                .addGap(82, 82, 82))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -144,22 +185,22 @@ public class Panel_funciones extends JPanel {
                 .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAgregar)
-                    .addComponent(campoPelicula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Sala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(btnEditar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnEliminar)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnActulizar))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(campoPrecioBase, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(53, 53, 53)
-                        .addComponent(campoFechaHora, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
+                    .addComponent(Sala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addComponent(comboPeliculas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnEditar)
+                    .addComponent(jLabel2)
+                    .addComponent(campoFechaHora, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnEliminar)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(campoPrecioBase, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(btnActulizar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(95, 95, 95))
         );
@@ -169,6 +210,17 @@ public class Panel_funciones extends JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
 
+private void cargarSalas() {
+    String[] salas = {
+        "1 - Sala 1",
+        "2 - Sala VIP",
+        "3 - Sala 4D",
+        "4 - Sala Infantil",
+        "5 - Sala Platinum",
+        "6 - Sala 2"
+    };
+    Sala.setModel(new DefaultComboBoxModel<>(salas));
+}
 
     private void SalaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalaActionPerformed
 Sala.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {
@@ -182,7 +234,7 @@ Sala.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {
 
 }
 private void limpiarCampos() {
-    campoPelicula.setText("");
+     comboPeliculas.setSelectedIndex(0);
     campoFechaHora.setText("");
     campoPrecioBase.setText("");
     Sala.setSelectedIndex(0);
@@ -204,33 +256,37 @@ private void actualizarTabla() {
             case 6: salaTexto = "Sala 2"; break;
             default: salaTexto = "Sala " + f.getSala_id();
         }
-
+        
         Object[] fila = {
             f.getFuncion_id(),
+            f.getTituloPelicula(),
             f.getPelicula_id(),
             salaTexto,
             f.getFecha_hora(),
             f.getPrecio_base()
         };
         modelo.addRow(fila);
-    }
-}
+         }
+
 {
     }//GEN-LAST:event_SalaActionPerformed
-
+}
     private void campoPrecioBaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoPrecioBaseActionPerformed
       
     }//GEN-LAST:event_campoPrecioBaseActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
   try {
-        int peliculaId = Integer.parseInt(campoPelicula.getText().trim());
+        String seleccionPelicula = (String) comboPeliculas.getSelectedItem();
+int peliculaId = Integer.parseInt(seleccionPelicula.split(" - ")[0]);
+
         String fechaHora;
       fechaHora = campoFechaHora.getText().trim();
         float precio = Float.parseFloat(campoPrecioBase.getText().trim());
         String seleccionSala = (String) Sala.getSelectedItem();
         int salaId = Integer.parseInt(seleccionSala.split(" - ")[0]);
-         Funcion f = new Funcion();
+        
+        Funcion f = new Funcion();
         f.setPelicula_id(peliculaId);
         f.setSala_id(salaId);
         f.setFecha_hora(fechaHora);
@@ -246,9 +302,20 @@ private void actualizarTabla() {
     } catch (Exception e) {
         System.out.println("Error al agregar función: " + e.getMessage());
     }
-}{
-    }//GEN-LAST:event_btnAgregarActionPerformed
 
+    }//GEN-LAST:event_btnAgregarActionPerformed
+private List<Pelicula> listaPeliculas;    // para guardar datos reales
+
+private void cargarPeliculas() {
+    PeliculaDAO dao = new PeliculaDAO();
+    listaPeliculas = dao.listar();
+
+    String[] items = new String[listaPeliculas.size()];
+    for (int i = 0; i < listaPeliculas.size(); i++) {
+        items[i] = listaPeliculas.get(i).getPelicula_id() + " - " + listaPeliculas.get(i).getTitulo();
+    }
+    comboPeliculas.setModel(new DefaultComboBoxModel<>(items));
+}
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
 
     int filaSeleccionada = funciones.getSelectedRow();
@@ -259,7 +326,9 @@ private void actualizarTabla() {
 
     try {
         int funcionId = (int) modelo.getValueAt(filaSeleccionada, 0);
-        int peliculaId = Integer.parseInt(campoPelicula.getText().trim());
+String seleccionPelicula = (String) comboPeliculas.getSelectedItem();
+int peliculaId = Integer.parseInt(seleccionPelicula.split(" - ")[0]);
+
         String fechaHora = campoFechaHora.getText().trim();
         float precio = Float.parseFloat(campoPrecioBase.getText().trim());
         String seleccionSala = (String) Sala.getSelectedItem();
@@ -303,8 +372,29 @@ private void actualizarTabla() {
     } else {
         System.out.println("Error al eliminar función.");
     }
-}
+ }}
+ public void setTablaFunciones(List<Funcion> listaFunciones) {
 
+
+String[] columnas = {"ID Funcion", "Fecha y Hora", "Sala", "Película"};
+        DefaultTableModel modelo = new DefaultTableModel(null, columnas) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        for (Funcion f : listaFunciones) {
+            Object[] fila = new Object[4];
+            fila[0] = f.getFuncion_id();
+            fila[1] = f.getFecha_hora();
+            fila[2] = f.getSala_id();
+            fila[3] = f.getPelicula_id();
+            modelo.addRow(fila);
+        }
+
+        funciones.setModel(modelo);
+    
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnActulizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActulizarActionPerformed
@@ -320,9 +410,12 @@ private void actualizarTabla() {
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JTextField campoFechaHora;
-    private javax.swing.JTextField campoPelicula;
     private javax.swing.JTextField campoPrecioBase;
+    private javax.swing.JComboBox<String> comboPeliculas;
     private javax.swing.JTable funciones;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

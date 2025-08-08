@@ -4,16 +4,17 @@ public class Cliente {
     private int clientes_id;
     private String nombre;
     private String apellido;
-    private String email;
+    private String correo;
     private String telefono;
 
-    public Cliente() {}
+    public Cliente() {
+    }
 
-    public Cliente(int cliente_id, String nombre, String apellido, String email, String telefono) {
+    public Cliente(int clientes_id, String nombre, String apellido, String correo, String telefono) {
         this.clientes_id = clientes_id;
         this.nombre = nombre;
         this.apellido = apellido;
-        this.email = email;
+        this.correo = correo;
         this.telefono = telefono;
     }
 
@@ -21,8 +22,8 @@ public class Cliente {
         return clientes_id;
     }
 
-    public void setClientes_id(int cliente_id) {
-        this.clientes_id = cliente_id;
+    public void setClientes_id(int clientes_id) {
+        this.clientes_id = clientes_id;
     }
 
     public String getNombre() {
@@ -41,12 +42,12 @@ public class Cliente {
         this.apellido = apellido;
     }
 
-    public String getEmail() {
-        return email;
+    public String getCorreo() {
+        return correo;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setCorreo(String correo) {
+        this.correo = correo;
     }
 
     public String getTelefono() {
